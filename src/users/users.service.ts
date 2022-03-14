@@ -12,4 +12,9 @@ export class UsersService {
   async findAll() {
     return await this.userModel.find();
   }
+
+  async create(options): Promise<User> {
+    // this may be wrong!!!
+    return await this.userModel.create(options);
+  }
 }

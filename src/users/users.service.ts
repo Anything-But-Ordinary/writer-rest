@@ -17,4 +17,8 @@ export class UsersService {
     // this may be wrong!!!
     return await this.userModel.create(options);
   }
+
+  async findOne(options) {
+    return await this.userModel.findOne(options);
+  }
 }

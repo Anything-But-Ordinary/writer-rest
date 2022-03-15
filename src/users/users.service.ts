@@ -21,4 +21,8 @@ export class UsersService {
   async findOne(options) {
     return await this.userModel.findOne(options);
   }
+
+  async findOneAndSelect(options) {
+    return await this.userModel.findOne(options).select('+password');
+  }
 }

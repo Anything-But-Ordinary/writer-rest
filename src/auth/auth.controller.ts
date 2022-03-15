@@ -1,21 +1,18 @@
 import {
   BadRequestException,
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Get,
   NotFoundException,
   Post,
   Req,
   Res,
-  UseInterceptors,
 } from '@nestjs/common';
-import { RegisterDto } from './dtos/register.dto';
-import * as bcrypt from 'bcryptjs';
-import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
-import { classToPlain } from 'class-transformer';
+import { UsersService } from '../users/users.service';
+import { RegisterDto } from './dtos/register.dto';
 
 @Controller()
 export class AuthController {
@@ -46,7 +43,7 @@ export class AuthController {
     @Body('password') password: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const user = await this.usersService.findOne({ email });
+    const user = await this.usersService.findOneAndSelect({ email });
     if (!user) {
       throw new NotFoundException('User Not Found');
     }
@@ -77,5 +74,14 @@ export class AuthController {
     const user = await this.usersService.findOne({ id });
 
     return user;
+  }
+
+  @Post('admin/logout')
+  async logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie('jwt');
+
+    return {
+      message: 'logout Success',
+    };
   }
 }

@@ -7,11 +7,13 @@ import {
   Post,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
 import { UsersService } from '../users/users.service';
+import { AuthGuard } from './auth.guard';
 import { RegisterDto } from './dtos/register.dto';
 
 @Controller()
@@ -65,6 +67,7 @@ export class AuthController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Get('admin/user')
   async user(@Req() req: Request) {
     const cookie = req.cookies['jwt'];
@@ -76,6 +79,7 @@ export class AuthController {
     return user;
   }
 
+  @UseGuards(AuthGuard)
   @Post('admin/logout')
   async logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('jwt');

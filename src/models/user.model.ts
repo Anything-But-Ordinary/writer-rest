@@ -1,4 +1,4 @@
-import { ModelOptions, prop } from '@typegoose/typegoose';
+import { ModelOptions, prop, getModelForClass } from '@typegoose/typegoose';
 
 @ModelOptions({
   schemaOptions: {
@@ -12,6 +12,9 @@ export class User {
   @prop({ unique: true })
   email: string;
 
-  @prop()
-  password: string;
+  @prop({
+    select: false,
+    required: true,
+  })
+  password!: string;
 }

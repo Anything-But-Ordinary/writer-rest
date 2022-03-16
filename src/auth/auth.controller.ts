@@ -46,7 +46,9 @@ export class AuthController {
     @Body('password') password: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const user = await this.usersService.findOneAndSelect({ email });
+    // console.log(email);
+    const user = await this.usersService.findOneAndSelect({ email: email });
+    // console.log(user);
     if (!user) {
       throw new NotFoundException('User Not Found');
     }
@@ -56,7 +58,8 @@ export class AuthController {
     }
 
     const jwt = await this.jwtService.signAsync({
-      id: user.id,
+      email_id: user.email,
+      // marked
     });
 
     res.cookie('jwt', jwt, {
@@ -73,9 +76,14 @@ export class AuthController {
   async user(@Req() req: Request) {
     const cookie = req.cookies['jwt'];
 
-    const { id } = await this.jwtService.verifyAsync(cookie);
+    // console.log(cookie);
 
-    const user = await this.usersService.findOne({ id });
+    const { email_id } = await this.jwtService.verifyAsync(cookie);
+    // const data = await this.jwtService.verifyAsync(cookie);
+
+    // console.log(data);
+
+    const user = await this.usersService.findOne({ email: email_id });
 
     return user;
   }
@@ -98,16 +106,17 @@ export class AuthController {
     @Body('email') email: string,
   ) {
     const cookie = req.cookies['jwt'];
-    const { id } = await this.jwtService.verifyAsync(cookie);
+    const { email_id } = await this.jwtService.verifyAsync(cookie);
 
-    await this.usersService.update(id, {
+    await this.usersService.update(email_id, {
       username,
       email,
     });
 
-    return this.usersService.findOne({ id });
+    return await this.usersService.findOne({ email });
   }
 
+  @UseGuards(AuthGuard)
   @Put('admin/users/password')
   async updatePassword(
     @Req() req: Request,
@@ -119,15 +128,15 @@ export class AuthController {
     }
 
     const cookie = req.cookies['jwt'];
-    const { id } = await this.jwtService.verifyAsync(cookie);
+    const { email_id } = await this.jwtService.verifyAsync(cookie);
 
     // const user = await this.usersService.findOneAndSelect({ id });
 
     // user.updateOne
 
-    await this.usersService.update(id, {
+    await this.usersService.update(email_id, {
       password: await bcrypt.hash(password, 12),
     });
-    return this.usersService.findOne({ id });
+    return this.usersService.findOne({ email: email_id });
   }
 }

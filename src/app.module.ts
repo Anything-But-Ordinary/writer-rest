@@ -8,7 +8,7 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    TypegooseModule.forRoot('mongodb://localhost/writer-2'),
+    TypegooseModule.forRoot('mongodb://localhost/writer-3'),
     UsersModule,
     SharedModule,
     AuthModule,

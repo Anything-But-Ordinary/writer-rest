@@ -5,6 +5,7 @@ import {
   Get,
   NotFoundException,
   Post,
+  Put,
   Req,
   Res,
   UseGuards,
@@ -87,5 +88,46 @@ export class AuthController {
     return {
       message: 'logout Success',
     };
+  }
+
+  @UseGuards(AuthGuard)
+  @Put('admin/users/info')
+  async updateUserInfo(
+    @Req() req: Request,
+    @Body('username') username: string,
+    @Body('email') email: string,
+  ) {
+    const cookie = req.cookies['jwt'];
+    const { id } = await this.jwtService.verifyAsync(cookie);
+
+    await this.usersService.update(id, {
+      username,
+      email,
+    });
+
+    return this.usersService.findOne({ id });
+  }
+
+  @Put('admin/users/password')
+  async updatePassword(
+    @Req() req: Request,
+    @Body('password') password: string,
+    @Body('password_confirm') password_confirm: string,
+  ) {
+    if (password !== password_confirm) {
+      throw new BadRequestException('Password not match');
+    }
+
+    const cookie = req.cookies['jwt'];
+    const { id } = await this.jwtService.verifyAsync(cookie);
+
+    // const user = await this.usersService.findOneAndSelect({ id });
+
+    // user.updateOne
+
+    await this.usersService.update(id, {
+      password: await bcrypt.hash(password, 12),
+    });
+    return this.usersService.findOne({ id });
   }
 }

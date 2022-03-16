@@ -26,7 +26,7 @@ export class UsersService {
     return await this.userModel.findOne(options).select('+password');
   }
 
-  async update(email: string, options) {
-    return await this.userModel.updateOne({ email: email }, options);
+  async update(_id: number, options) {
+    return await this.userModel.updateOne({ _id }, options);
   }
 }

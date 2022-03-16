@@ -58,7 +58,7 @@ export class AuthController {
     }
 
     const jwt = await this.jwtService.signAsync({
-      email_id: user.email,
+      _id: user._id,
       // marked
     });
 
@@ -76,14 +76,14 @@ export class AuthController {
   async user(@Req() req: Request) {
     const cookie = req.cookies['jwt'];
 
-    // console.log(cookie);
+    console.log(cookie);
 
-    const { email_id } = await this.jwtService.verifyAsync(cookie);
-    // const data = await this.jwtService.verifyAsync(cookie);
+    const { _id } = await this.jwtService.verifyAsync(cookie);
+    const data = await this.jwtService.verifyAsync(cookie);
 
-    // console.log(data);
+    console.log(data);
 
-    const user = await this.usersService.findOne({ email: email_id });
+    const user = await this.usersService.findOne({ _id });
 
     return user;
   }
@@ -106,14 +106,14 @@ export class AuthController {
     @Body('email') email: string,
   ) {
     const cookie = req.cookies['jwt'];
-    const { email_id } = await this.jwtService.verifyAsync(cookie);
+    const { _id } = await this.jwtService.verifyAsync(cookie);
 
-    await this.usersService.update(email_id, {
+    await this.usersService.update(_id, {
       username,
       email,
     });
 
-    return await this.usersService.findOne({ email });
+    return this.usersService.findOne({ _id });
   }
 
   @UseGuards(AuthGuard)
@@ -128,15 +128,15 @@ export class AuthController {
     }
 
     const cookie = req.cookies['jwt'];
-    const { email_id } = await this.jwtService.verifyAsync(cookie);
+    const { _id } = await this.jwtService.verifyAsync(cookie);
 
     // const user = await this.usersService.findOneAndSelect({ id });
 
     // user.updateOne
 
-    await this.usersService.update(email_id, {
+    await this.usersService.update(_id, {
       password: await bcrypt.hash(password, 12),
     });
-    return this.usersService.findOne({ email: email_id });
+    return this.usersService.findOne({ _id });
   }
 }
